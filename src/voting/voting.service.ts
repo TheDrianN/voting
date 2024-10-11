@@ -1,81 +1,74 @@
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
+import { ethers } from 'ethers';  // Importar ethers.js
+import * as contractABI from '../common/abi/VotesContract.json'; // Importar el ABI del contrato
 import { CreateVotingDto } from './dto/create-voting.dto';
-import { UpdateVotingDto } from './dto/update-voting.dto';
-import { PrismaClient } from '@prisma/client';
-import { Console } from 'console';
-import { PaginationDto } from 'src/common';
-import { take } from 'rxjs';
-import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
-export class VotingService extends PrismaClient implements OnModuleInit{
-  onModuleInit() {
-    this.$connect();
-    console.log("Data base connected");
-  }
-  create(createVotingDto: CreateVotingDto) {
-    return this.votes.create({
-      data: createVotingDto
-    });
-  }
+export class VotingService implements OnModuleInit {
+  private provider: ethers.JsonRpcProvider;
+  private contract: ethers.Contract;
+  private signer: ethers.Signer;
 
-  async findAll(paginationDto : PaginationDto) {
-    const {page , limit}= paginationDto;
+  // Inicialización del módulo y configuración del contrato inteligente
+  async onModuleInit() {
+    // Conectar a la blockchain (puedes usar Ganache o Infura según tu red)
+    this.provider = new ethers.JsonRpcProvider('http://192.168.100.24:8545/'); // Cambia la URL de acuerdo a tu red
+    const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';  // Clave privada de la cuenta que firmará las transacciones
+    this.signer = await this.provider.getSigner(0); 
 
-    const totalPages = await this.votes.count();
-    const lastPage = Math.ceil(totalPages / limit);
+    // Dirección del contrato desplegado en la blockchain
+    const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
-    return{
-      data: await this.votes.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      meta:{
-        total: totalPages,
-        page: page,
-        lastPage: lastPage
-      }
-    }
+    // Instancia del contrato con el ABI y la dirección
+    this.contract = new ethers.Contract(contractAddress, contractABI.abi, this.signer);
 
+    console.log("Conectado a la blockchain");
   }
 
-  async findOne(id: number) {
-    const voto = await this.votes.findFirst({
-      where:{id},
-    });
+  // Función para almacenar voto en la blockchain
+  async createVote(createVotingDto: CreateVotingDto) {
+    const { group_candidates_id, sub_election_id, vote_status_id } = createVotingDto;
 
-    if(!voto){
-      throw new RpcException({
-        message:`El voto con el id ${id} no existe`,
-        status: HttpStatus.BAD_REQUEST
-      })
-    }
+    // Llamar a la función del contrato para almacenar el voto con parámetros desestructurados
+    const tx = await this.contract.storeVote(group_candidates_id, sub_election_id, vote_status_id);
 
-    return voto;
+    // Esperar a que la transacción sea confirmada
+    const receipt = await tx.wait();
 
+    return receipt;  // Retornar el recibo de la transacción
   }
 
-  async update(id: number, updateVotingDto: UpdateVotingDto) {
-    const {id:_, ...data}= updateVotingDto;
-    await this.findOne(id);
-
-    return this.votes.update({
-      where:{id},
-      data: data
-    });
-
+    // Función para convertir BigInt a string en un objeto
+  bigIntToString(obj: any) {
+    return JSON.parse(JSON.stringify(obj, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    ));
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
-    
-    const voto = await this.votes.update({
-      where:{id},
-      data:{
-        vote_type:'Null'
-      }
-    })
+ // Obtener un voto específico por ID
+async getVoteById(subElectionId: number) {
+  // Llamar a la función del contrato para obtener los votos por subElectionsId
+  const [groupCandidatesIds, subElectionsIds, voteStatusIds] = await this.contract.getVotesBySubElection(subElectionId);
 
-    return voto;
-  }
+  // Crear un array de objetos JSON combinando los tres arrays
+  const votes = groupCandidatesIds.map((groupCandidatesId, index) => {
+    return {
+      groupCandidatesId: groupCandidatesId,
+      subElectionsId: subElectionsIds[index],
+      voteStatusId: voteStatusIds[index],
+    };
+  });
+
+  // Convertir BigInt a string antes de retornar el resultado
+  const result = this.bigIntToString(votes);
+
+  // Retornar los datos crudos
+  return {
+    data: result,
+    status: HttpStatus.ACCEPTED,
+  };
+}
+
+  
+
 }

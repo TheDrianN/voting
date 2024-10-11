@@ -1,18 +1,16 @@
-import { IsNumber, IsString, Min } from "class-validator";
+import { IsNumber, IsPositive,Min  } from "class-validator";
 
 export class CreateVotingDto {
     @IsNumber()
-    @Min(1) 
+    @IsPositive() 
     public sub_election_id: number;
 
     @IsNumber()
-    @Min(1)
-    public user_id: number;
+    @IsPositive()
+    public vote_status_id: number;
 
     @IsNumber()
-    @Min(1)
+    @Min(0)
     public group_candidates_id: number;
 
-    @IsString()
-    public vote_type: string;
 }

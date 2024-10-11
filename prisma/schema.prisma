@@ -13,13 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model VoteStatus {
+  id           Int      @id @default(autoincrement())
+  users_id     Int
+  elections_id Int
+  status       String   @db.Char(1) // Tipo de dato CHAR(1) en la base de datos
+  browser      String   @db.VarChar(255)
+  latitud      String   @db.VarChar(255)
+  longitud     String   @db.VarChar(255)
+  datevote     DateTime @db.Timestamp(0)
+
+}
 
 model Votes{
   id Int @id @default(autoincrement())
   sub_election_id Int
-  user_id Int
-  group_candidates_id Int?
-  vote_type String  @db.VarChar(5)
-  date_vote DateTime @default(now()) @db.Timestamp(0)
-  updated_at DateTime @updatedAt @db.Timestamp(0)
+  vote_status_id Int
+  group_candidates_id Int
+
 }

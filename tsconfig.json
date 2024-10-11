@@ -16,6 +16,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,        // Habilita la importación de archivos JSON
+    "esModuleInterop": true           // Asegura la interoperabilidad de módulos ES
   }
 }
