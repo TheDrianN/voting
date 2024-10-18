@@ -54,5 +54,18 @@ export class VoteStatusService extends PrismaClient implements OnModuleInit{
     };
   }
 
+  async remove(id:number){
+    await this.findOne(id);
+
+    const votestatus = await this.voteStatus.delete({
+      where:{id}
+    })
+
+    return {
+      data:votestatus,
+      status: HttpStatus.ACCEPTED
+    };
+  }
+
 
 }

@@ -25,5 +25,10 @@ export class VoteStatusController {
     return this.voteStatusService.findOne(id);
   }
 
+  @MessagePattern('removeVoteStatus')
+  remove(@Payload('id',ParseIntPipe) id: number) {
+    return this.voteStatusService.remove(id);
+  }
+
 
 }
