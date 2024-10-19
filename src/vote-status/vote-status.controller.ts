@@ -11,7 +11,6 @@ export class VoteStatusController {
 
   @MessagePattern('createVoteStatus')
   create(@Payload() createVoteStatusDto: CreateVoteStatusDto) {
-    console.log(createVoteStatusDto)
     return this.voteStatusService.create(createVoteStatusDto);
   }
 
