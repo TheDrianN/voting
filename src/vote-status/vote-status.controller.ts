@@ -30,5 +30,13 @@ export class VoteStatusController {
     return this.voteStatusService.remove(id);
   }
 
+  @MessagePattern('validationStatus')
+  validationStatus(
+    @Payload('id_user',ParseIntPipe) id_user: number,
+    @Payload('id_election',ParseIntPipe) id_election: number
+  ) {
+    return this.voteStatusService.validationStatus(id_user,id_election);
+  }
+
 
 }

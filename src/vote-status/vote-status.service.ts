@@ -67,5 +67,27 @@ export class VoteStatusService extends PrismaClient implements OnModuleInit{
     };
   }
 
+  async validationStatus(id_user: number, id_election: number) {
+    const votestatus = await this.voteStatus.findFirst({
+      where:{
+        users_id: id_user,
+        elections_id: id_election
+      },
+    });
+
+    if(!votestatus){
+      throw new RpcException({
+        message:`El voteStatus no existe`,
+        status: HttpStatus.NOT_FOUND
+      })
+    }
+
+    return {
+      data:votestatus,
+      status:  HttpStatus.OK
+    };
+  }
+
+
 
 }
