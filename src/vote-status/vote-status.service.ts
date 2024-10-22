@@ -88,6 +88,24 @@ export class VoteStatusService extends PrismaClient implements OnModuleInit{
     };
   }
 
+  async validationUser(id:number){
+    const user = this.voteStatus.findFirst({
+      where:{
+        users_id:id,
+      }
+    });
 
+    if (user) {
+      return {
+        status: HttpStatus.CONFLICT,
+        message: 'No se puede eliminar el usuario. Está asociado a otros datos.',
+      };
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'El usuario no está asociado a ningún otro dato.',
+    };
+  }
 
 }

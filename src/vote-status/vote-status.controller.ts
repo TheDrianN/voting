@@ -37,5 +37,9 @@ export class VoteStatusController {
     return this.voteStatusService.validationStatus(id_user,id_election);
   }
 
+  @MessagePattern('validationUser')
+  validationUser(@Payload('id',ParseIntPipe) id: number) {
+    return this.voteStatusService.validationUser(id);
+  }
 
 }
