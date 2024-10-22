@@ -89,7 +89,7 @@ export class VoteStatusService extends PrismaClient implements OnModuleInit{
   }
 
   async validationUser(id:number){
-    const user = this.voteStatus.findFirst({
+    const user = await this.voteStatus.findFirst({
       where:{
         users_id:id,
       }
