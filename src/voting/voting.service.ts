@@ -11,6 +11,7 @@ export class VotingService implements OnModuleInit {
 
   // Inicialización del módulo y configuración del contrato inteligente
   async onModuleInit() {
+    /*
     // Conectar a la blockchain (puedes usar Ganache o Infura según tu red)
     this.provider = new ethers.JsonRpcProvider('http://192.168.100.24:8545/'); // Cambia la URL de acuerdo a tu red
     const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';  // Clave privada de la cuenta que firmará las transacciones
@@ -20,14 +21,14 @@ export class VotingService implements OnModuleInit {
     const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
     // Instancia del contrato con el ABI y la dirección
-    this.contract = new ethers.Contract(contractAddress, contractABI.abi, this.signer);
+    this.contract = new ethers.Contract(contractAddress, contractABI.abi, this.signer); */
 
     console.log("Conectado a la blockchain");
   }
 
   // Función para almacenar voto en la blockchain
   async createVote(createVotingDto: CreateVotingDto) {
-    const { group_candidates_id, sub_election_id, vote_status_id } = createVotingDto;
+    /*const { group_candidates_id, sub_election_id, vote_status_id } = createVotingDto;
 
     // Llamar a la función del contrato para almacenar el voto con parámetros desestructurados
     const tx = await this.contract.storeVote(group_candidates_id, sub_election_id, vote_status_id);
@@ -35,7 +36,7 @@ export class VotingService implements OnModuleInit {
     // Esperar a que la transacción sea confirmada
     const receipt = await tx.wait();
 
-    return receipt;  // Retornar el recibo de la transacción
+    return receipt;  // Retornar el recibo de la transacción*/
   }
 
     // Función para convertir BigInt a string en un objeto
@@ -47,7 +48,7 @@ export class VotingService implements OnModuleInit {
 
  // Obtener un voto específico por ID
 async getVoteById(subElectionId: number) {
-  // Llamar a la función del contrato para obtener los votos por subElectionsId
+ /* // Llamar a la función del contrato para obtener los votos por subElectionsId
   const [groupCandidatesIds, subElectionsIds, voteStatusIds] = await this.contract.getVotesBySubElection(subElectionId);
 
   // Crear un array de objetos JSON combinando los tres arrays
@@ -66,7 +67,7 @@ async getVoteById(subElectionId: number) {
   return {
     data: result,
     status: HttpStatus.ACCEPTED,
-  };
+  };*/
 }
 
   
